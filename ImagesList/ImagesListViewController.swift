@@ -40,9 +40,12 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return UITableViewCell()
         }
         let currentDate = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .long
-        dateFormatter.timeStyle = .none
+        var dateFormatter: DateFormatter = {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "dd MMMM yyyy"
+                formatter.locale = Locale(identifier: "ru_RU")
+                return formatter
+            }()
         let dateString = dateFormatter.string(from: currentDate)
         imageListCell.dateLabel.text = "\(dateString)"
         
@@ -81,7 +84,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         cell.customImageView.image = photo
-        let isLiked = indexPath.row % 2 == 0
+        let isLiked = indexPath.row % 2 != 0
         let likeImage = isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
         cell.likeButton.setImage(likeImage, for: .normal)
     }
