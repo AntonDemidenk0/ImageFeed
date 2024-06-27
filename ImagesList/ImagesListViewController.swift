@@ -40,7 +40,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return UITableViewCell()
         }
         let currentDate = Date()
-        var dateFormatter: DateFormatter = {
+        let dateFormatter: DateFormatter = {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "dd MMMM yyyy"
                 formatter.locale = Locale(identifier: "ru_RU")
