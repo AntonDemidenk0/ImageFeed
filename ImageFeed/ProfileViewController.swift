@@ -1,44 +1,53 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
-   
+    
+    private let profileImage: UIImageView = {
+        let image = UIImage(named: "UserPic")
+        let imageView = UIImageView(image: image)
+        return imageView
+    }()
+    private let userName: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 23)
+        label.textColor = .white
+        label.textAlignment = .left
+        label.text = "Екатерина Новикова"
+        return label
+    }()
+    private let loginName: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.textColor = .gray
+        label.textAlignment = .left
+        label.text = "@ekaterina_nov"
+        return label
+    }()
+    private let profileInfo: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.textColor = .white
+        label.textAlignment = .left
+        label.numberOfLines = 20
+        label.text = "Hello, world!"
+        return label
+    }()
+    private let exitButton: UIButton = {
+        let button = UIButton(type: .custom)
+        button.setImage(UIImage(named: "ExitButton"), for: .normal)
+        return button
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let profileImage = UIImage(named: "UserPic")
-        let imageView = UIImageView(image: profileImage)
-        
-        let userName = UILabel()
-        userName.font = UIFont.boldSystemFont(ofSize: 23)
-        userName.textColor = .white
-        userName.textAlignment = .left
-        userName.text = "Екатерина Новикова"
-        
-        let loginName = UILabel()
-        loginName.font = UIFont.systemFont(ofSize: 13)
-        loginName.textColor = .gray
-        loginName.textAlignment = .left
-        loginName.text = "@ekaterina_nov"
-        
-        let profileInfo = UILabel()
-        profileInfo.font = UIFont.systemFont(ofSize: 13)
-        profileInfo.textColor = .white
-        profileInfo.textAlignment = .left
-        profileInfo.numberOfLines = 20
-        profileInfo.text = "Hello, world!"
-        
-        let exitButton = UIButton(type: .custom)
-        exitButton.setImage(UIImage(named: "ExitButton"), for: .normal)
         exitButton.addTarget(self, action: #selector(self.didTapExit), for: .touchUpInside)
-        
-        let subviews = [imageView, userName, loginName, profileInfo, exitButton]
-        for subview in subviews {
-            subview.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview(subview)
+        [profileImage, userName, loginName, profileInfo, exitButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
         }
-        
-        setUpConstraints(for: imageView, userName: userName, loginName: loginName, profileInfo: profileInfo, exitButton: exitButton)
+        setUpConstraints(for: profileImage, userName: userName, loginName: loginName, profileInfo: profileInfo, exitButton: exitButton)
     }
     
     // MARK: - Actions
@@ -47,36 +56,33 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-
-    private func activate(_ constraints: [NSLayoutConstraint]) {
-        for constraint in constraints {
-            constraint.isActive = true
-        }
-    }
-    private func setUpConstraints(for imageView: UIImageView, userName: UILabel, loginName: UILabel, profileInfo: UILabel, exitButton: UIButton) {
+    private func setUpConstraints(for profileImage: UIImageView, 
+                                  userName: UILabel,
+                                  loginName: UILabel,
+                                  profileInfo: UILabel,
+                                  exitButton: UIButton
+    ) {
         let safeArea = view.safeAreaLayoutGuide
         
-        let constraints = [
-            imageView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 32),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            imageView.heightAnchor.constraint(equalToConstant: 70),
-            imageView.widthAnchor.constraint(equalToConstant: 70),
+        NSLayoutConstraint.activate([
+            profileImage.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: 32),
+            profileImage.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            profileImage.heightAnchor.constraint(equalToConstant: 70),
+            profileImage.widthAnchor.constraint(equalToConstant: 70),
             
-            userName.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
-            userName.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            userName.topAnchor.constraint(equalTo: profileImage.bottomAnchor, constant: 8),
+            userName.leadingAnchor.constraint(equalTo: profileImage.leadingAnchor),
             
             loginName.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 8),
-            loginName.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            loginName.leadingAnchor.constraint(equalTo: profileImage.leadingAnchor),
             
             profileInfo.topAnchor.constraint(equalTo: loginName.bottomAnchor, constant: 8),
-            profileInfo.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            profileInfo.leadingAnchor.constraint(equalTo: profileImage.leadingAnchor),
             
-            exitButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            exitButton.centerYAnchor.constraint(equalTo: profileImage.centerYAnchor),
             exitButton.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -24),
             exitButton.heightAnchor.constraint(equalToConstant: 24),
             exitButton.widthAnchor.constraint(equalToConstant: 24)
-        ]
-        
-        activate(constraints)
+        ])
     }
 }
