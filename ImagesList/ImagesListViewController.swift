@@ -49,6 +49,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         imageListCell.dateLabel.text = "\(dateString)"
         
         configCell(for: imageListCell, with: indexPath)
+        configLikeButton(for: imageListCell, with: indexPath)
         return imageListCell
     }
     
@@ -83,10 +84,12 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         cell.customImageView.image = photo
+    }
+    func configLikeButton(for cell: ImagesListCell, with indexPath: IndexPath) {
         let isLiked = indexPath.row % 2 != 0
         let likeImage = isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
         cell.likeButton.setImage(likeImage, for: .normal)
+        }
     }
-}
 
 

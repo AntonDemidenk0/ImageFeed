@@ -12,14 +12,15 @@ final class OAuth2Service {
 
     // MARK: - Public Methods
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        guard let request = makeOAuthTokenRequest(code: code) else {
+        guard let request = Constants.makeOAuthTokenRequest(code: code) else {
             completion(.failure(NetworkError.urlSessionError))
             return
         }
 
         print("Request: \(request)")
 
-        let task = URLSession.shared.fetchOAuthToken(with: request) { result in
+        let task = URLSession.shared.fetchOAuthToken(with: request) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let responseBody):
                 print("Response body: \(responseBody)")
@@ -31,29 +32,5 @@ final class OAuth2Service {
             }
         }
         task.resume()
-    }
-
-    // MARK: - Private Methods
-    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
-        guard let baseURL = URL(string: "https://unsplash.com") else {
-            print("Invalid base URL")
-            return nil
-        }
-
-        let urlString = "/oauth/token"
-        + "?client_id=\(Constants.accessKey)"
-        + "&client_secret=\(Constants.secretKey)"
-        + "&redirect_uri=\(Constants.redirectURI)"
-        + "&code=\(code)"
-        + "&grant_type=authorization_code"
-
-        guard let url = URL(string: urlString, relativeTo: baseURL) else {
-            print("Invalid URL string")
-            return nil
-        }
-
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        return request
     }
 }
