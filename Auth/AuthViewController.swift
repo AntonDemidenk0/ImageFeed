@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import ProgressHUD
 
 // MARK: - AuthViewControllerDelegate Protocol
 protocol AuthViewControllerDelegate: AnyObject {
@@ -81,22 +82,25 @@ final class AuthViewController: UIViewController {
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        ProgressHUD.animate()
         oAuth2Service.fetchOAuthToken(code) { [weak self] result in
             guard let self = self else { return }
-            
             switch result {
+                
             case .success(let token):
+                ProgressHUD.dismiss()
                 print("Successfully fetched token: \(token)")
                 DispatchQueue.main.async {
                     self.delegate?.authViewController(self, didAuthenticateWithCode: code)
                 }
             case .failure(let error):
+                ProgressHUD.dismiss()
                 self.dismiss(animated: true)
                 print("Failed to fetch token: \(error)")
             }
         }
     }
-
+    
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
         dismiss(animated: true)
     }
