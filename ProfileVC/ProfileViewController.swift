@@ -1,12 +1,28 @@
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
+    
+    // MARK: - Properties
+    
+    private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
+    var profile: ProfileResult? {
+        didSet {
+            if isViewLoaded {
+                updateProfileDetails()
+                updateAvatar()
+            }
+        }
+    }
     
     private let profileImage: UIImageView = {
         let image = UIImage(named: "UserPic")
         let imageView = UIImageView(image: image)
         return imageView
     }()
+    
     private let userName: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 23)
@@ -15,6 +31,7 @@ final class ProfileViewController: UIViewController {
         label.text = "Екатерина Новикова"
         return label
     }()
+    
     private let loginName: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
@@ -23,6 +40,7 @@ final class ProfileViewController: UIViewController {
         label.text = "@ekaterina_nov"
         return label
     }()
+    
     private let profileInfo: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
@@ -32,6 +50,7 @@ final class ProfileViewController: UIViewController {
         label.text = "Hello, world!"
         return label
     }()
+    
     private let exitButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "ExitButton"), for: .normal)
@@ -42,7 +61,16 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        exitButton.addTarget(self, action: #selector(self.didTapExit), for: .touchUpInside)
+        setupView()
+        setupObserver()
+        updateAvatar()
+        updateProfileDetails()
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func setupView() {
+        exitButton.addTarget(self, action: #selector(didTapExit), for: .touchUpInside)
         [profileImage, userName, loginName, profileInfo, exitButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
@@ -50,18 +78,27 @@ final class ProfileViewController: UIViewController {
         setUpConstraints(for: profileImage, userName: userName, loginName: loginName, profileInfo: profileInfo, exitButton: exitButton)
     }
     
+    private func setupObserver() {
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(forName: ProfileImageService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+    }
+    
     // MARK: - Actions
+    
     @objc private func didTapExit() {
         // Обработка нажатия кнопки выхода
     }
     
     // MARK: - Private Methods
-    private func setUpConstraints(for profileImage: UIImageView, 
+    
+    private func setUpConstraints(for profileImage: UIImageView,
                                   userName: UILabel,
                                   loginName: UILabel,
                                   profileInfo: UILabel,
-                                  exitButton: UIButton
-    ) {
+                                  exitButton: UIButton) {
         let safeArea = view.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
@@ -84,5 +121,23 @@ final class ProfileViewController: UIViewController {
             exitButton.heightAnchor.constraint(equalToConstant: 24),
             exitButton.widthAnchor.constraint(equalToConstant: 24)
         ])
+    }
+    
+    private func updateProfileDetails() {
+        guard let profile = profile else { return }
+        print("Updating profile details with: \(profile)")
+        loginName.text = profile.username
+        userName.text = profile.first_name + " " + profile.last_name
+        profileInfo.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        profileImage.kf.setImage(with: url)
+        profileImage.layer.cornerRadius = 35
+        profileImage.layer.masksToBounds = true
     }
 }
