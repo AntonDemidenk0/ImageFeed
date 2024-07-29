@@ -17,22 +17,21 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-            if segue.identifier == showSingleImageSegueIdentifier {
-                guard
-                    let viewController = segue.destination as? SingleImageViewController,
-                    let indexPath = sender as? IndexPath
-                else {
-                    assertionFailure("Invalid segue destination")
-                    return
-                }
-
-                let image = UIImage(named: photosName[indexPath.row])
-                _ = viewController.view
-                viewController.image = image
-            } else {
-                super.prepare(for: segue, sender: sender)
+        if segue.identifier == showSingleImageSegueIdentifier {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                assertionFailure("Invalid segue destination")
+                return
             }
+            let image = UIImage(named: photosName[indexPath.row])
+            _ = viewController.view
+            viewController.image = image
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
+    }
     // MARK: - UITableViewDataSource
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
@@ -41,15 +40,16 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         }
         let currentDate = Date()
         let dateFormatter: DateFormatter = {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "dd MMMM yyyy"
-                formatter.locale = Locale(identifier: "ru_RU")
-                return formatter
-            }()
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMMM yyyy"
+            formatter.locale = Locale(identifier: "ru_RU")
+            return formatter
+        }()
         let dateString = dateFormatter.string(from: currentDate)
         imageListCell.dateLabel.text = "\(dateString)"
         
         configCell(for: imageListCell, with: indexPath)
+        configLikeButton(for: imageListCell, with: indexPath)
         return imageListCell
     }
     
@@ -75,7 +75,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
-        }
+    }
     // MARK: - Private Methods
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photoName = photosName[indexPath.row]
@@ -84,10 +84,12 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return
         }
         cell.customImageView.image = photo
+    }
+    func configLikeButton(for cell: ImagesListCell, with indexPath: IndexPath) {
         let isLiked = indexPath.row % 2 != 0
         let likeImage = isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
         cell.likeButton.setImage(likeImage, for: .normal)
+        }
     }
-    }
-    
+
 
