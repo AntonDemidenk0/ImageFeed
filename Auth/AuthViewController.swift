@@ -12,6 +12,7 @@ final class AuthViewController: UIViewController {
     // MARK: - Properties
     private let oAuth2Service = OAuth2Service.shared
     weak var delegate: AuthViewControllerDelegate?
+    let splashVC = SplashViewController()
     
     private let authImageView: UIImageView = {
         let authImage = UIImage(named: "Logo")
@@ -103,15 +104,15 @@ extension AuthViewController: WebViewViewControllerDelegate {
         UIBlockingProgressHUD.show()
         oAuth2Service.fetchOAuthToken(code) { [weak self] result in
             guard let self = self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success(let token):
-                UIBlockingProgressHUD.dismiss()
                 print("Successfully fetched token: \(token)")
                 DispatchQueue.main.async {
                     self.delegate?.authViewController(self, didAuthenticateWithCode: code)
+                    vc.dismiss(animated: true)
                 }
             case .failure(let error):
-                UIBlockingProgressHUD.dismiss()
                 print("Failed to fetch token: \(error)")
                 self.navigationController?.popViewController(animated: true)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

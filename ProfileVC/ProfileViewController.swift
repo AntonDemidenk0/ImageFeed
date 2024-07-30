@@ -1,4 +1,6 @@
 import UIKit
+import WebKit
+import SwiftKeychainWrapper
 import Kingfisher
 
 final class ProfileViewController: UIViewController {
@@ -67,6 +69,12 @@ final class ProfileViewController: UIViewController {
         updateProfileDetails()
     }
     
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
     // MARK: - Setup Methods
     
     private func setupView() {
@@ -89,8 +97,8 @@ final class ProfileViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func didTapExit() {
-        // Обработка нажатия кнопки выхода
-    }
+        logout()
+     }
     
     // MARK: - Private Methods
     
@@ -124,20 +132,50 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateProfileDetails() {
-        guard let profile = profile else { return }
-        print("Updating profile details with: \(profile)")
-        loginName.text = profile.username
-        userName.text = profile.first_name + " " + profile.last_name
-        profileInfo.text = profile.bio
-    }
+           guard let profile = profile else { return }
+           print("Updating profile details with: \(profile)")
+           loginName.text = profile.username
+           let firstName = profile.first_name ?? ""
+           let lastName = profile.last_name ?? ""
+           userName.text = "\(firstName) \(lastName)"
+           profileInfo.text = profile.bio ?? ""
+       }
     
     private func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
-        else { return }
+        else {
+            profileImage.image = UIImage(named: "NoAvatarUser")
+            profileImage.layer.cornerRadius = 35
+            profileImage.layer.masksToBounds = true
+            return
+        }
         profileImage.kf.setImage(with: url)
         profileImage.layer.cornerRadius = 35
         profileImage.layer.masksToBounds = true
+    }
+    
+    private func logout() {
+        guard let token = Constants.tokenStorage.token else { return }
+        clearAppData()
+        let navigationController = UINavigationController(rootViewController: SplashViewController())
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
+    }
+    private func clearAppData() {
+        if let appDomain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+        }
+        
+
+        KeychainWrapper.standard.removeAllKeys()
+
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            for record in records {
+                dataStore.removeData(ofTypes: record.dataTypes, for: [record]) {}
+            }
+        }
     }
 }
