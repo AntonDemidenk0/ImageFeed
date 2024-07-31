@@ -7,6 +7,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     @IBOutlet weak var tableView: UITableView!
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let imagesListService = ImagesListService.shared
     
     // MARK: - Lifecycle
     
@@ -51,6 +52,14 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         configCell(for: imageListCell, with: indexPath)
         configLikeButton(for: imageListCell, with: indexPath)
         return imageListCell
+    }
+    
+    func tableView(_ tableView: UITableView,
+      willDisplay cell: UITableViewCell,
+      forRowAt indexPath: IndexPath
+    ) {
+        guard indexPath.row + 1 == imagesListService.photos.count else { return }
+        imagesListService.fetchPhotosNextPage()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
