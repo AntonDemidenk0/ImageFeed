@@ -42,27 +42,27 @@ enum Constants {
         return request
     }
     static func makeProfileInfoRequest() -> URLRequest? {
-            guard let baseURL = defaultBaseURL else {
-                print("Invalid base URL")
-                return nil
-            }
-            
-            let profileURLString = "/me"
-            guard let url = URL(string: profileURLString, relativeTo: baseURL) else {
-                print("Invalid URL string")
-                return nil
-            }
-            
-            var request = URLRequest(url: url)
-            if let token = tokenStorage.token {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            } else {
-                print("Token not found")
-                return nil
-            }
-            request.httpMethod = "GET"
-            return request
+        guard let baseURL = defaultBaseURL else {
+            print("Invalid base URL")
+            return nil
         }
+        
+        let profileURLString = "/me"
+        guard let url = URL(string: profileURLString, relativeTo: baseURL) else {
+            print("Invalid URL string")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        if let token = tokenStorage.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Token not found")
+            return nil
+        }
+        request.httpMethod = "GET"
+        return request
+    }
     static func makeProfilePicRequest(username: String) -> URLRequest? {
         guard let baseURL = defaultBaseURL else {
             print("Invalid base URL")
@@ -75,6 +75,28 @@ enum Constants {
         }
         var request = URLRequest(url: url)
         if let token = tokenStorage.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            print("Token not found")
+            return nil
+        }
+        
+        request.httpMethod = "GET"
+        return request
+    }
+    static func makePhotosRequest(page: Int) -> URLRequest? {
+        guard let baseURL = defaultBaseURL else {
+            print("Invalid base URL")
+            return nil
+        }
+        let urlString = "/photos?page=\(page)"
+        guard let url = URL(string: urlString, relativeTo: baseURL) else {
+            print("Invalid URL string")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        if let token = Constants.tokenStorage.token {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else {
             print("Token not found")

@@ -11,12 +11,21 @@ struct ImageResult: Codable {
     let id: String
     let width: CGFloat
     let height: CGFloat
-    let created_at: Date?
+    let created_at: String?
     let description: String?
     let liked_by_user: Bool
-    let imageUrls: ImageUrls
+    let urls: ImageUrls
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case width
+        case height
+        case created_at
+        case description
+        case liked_by_user
+        case urls
+    }
 }
-
 struct  ImageUrls: Codable {
     let full: String
     let thumb: String
