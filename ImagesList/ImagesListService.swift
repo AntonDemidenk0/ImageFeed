@@ -23,12 +23,13 @@ struct Photo {
 final class ImagesListService {
     
     static let shared = ImagesListService()
+    private init() {}
     static let didChangeNotification = Notification.Name(rawValue: "ImagesListServiceDidChange")
     
     private (set) var photos: [Photo] = []
     private var isFetching: Bool = false
-    private var lastLoadedPage: Int?
     private var task: URLSessionTask?
+    private var nextPage = 0
     
     // MARK: - Fetch Photos Next Page
     
@@ -36,13 +37,12 @@ final class ImagesListService {
         guard !isFetching, task == nil else { return }
         isFetching = true
         
-        let nextPage = (lastLoadedPage ?? 0) + 1
+        nextPage += 1
         
         guard let request = Constants.makePhotosRequest(page: nextPage) else {
             isFetching = false
             return
         }
-        
         task = URLSession.shared.objectTask(for: request) { (result: Result<[ImageResult], Error>) in
             DispatchQueue.main.async {
                 self.isFetching = false

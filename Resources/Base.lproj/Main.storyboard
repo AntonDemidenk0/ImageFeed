@@ -117,8 +117,8 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
-                                            <outlet property="DateLabel" destination="hOV-f3-SYV" id="eAU-8Z-zEC"/>
                                             <outlet property="customImageView" destination="byw-by-fog" id="i36-m7-18F"/>
+                                            <outlet property="dateLabel" destination="hOV-f3-SYV" id="cMr-fV-Zt7"/>
                                             <outlet property="likeButton" destination="3Ui-sI-0BI" id="9SF-nP-1CS"/>
                                         </connections>
                                     </tableViewCell>

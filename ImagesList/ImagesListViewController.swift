@@ -1,13 +1,13 @@
 import UIKit
-import Foundation
+import Kingfisher
 
 final class ImagesListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - Properties
     
     @IBOutlet weak var tableView: UITableView!
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let imagesListService = ImagesListService.shared
+    var photos: [Photo] = []
     
     // MARK: - Lifecycle
     
@@ -16,7 +16,17 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePhotosUpdated),
+            name: ImagesListService.didChangeNotification,
+            object: nil
+        )
+        
+        imagesListService.fetchPhotosNextPage()
     }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
             guard
@@ -26,55 +36,52 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
                 assertionFailure("Invalid segue destination")
                 return
             }
-            let image = UIImage(named: photosName[indexPath.row])
-            _ = viewController.view
-            viewController.image = image
+            let photo = photos[indexPath.row]
+            let imageURL = URL(string: photo.largeImageURL)
+            //viewController.imageURL = imageURL
         } else {
             super.prepare(for: segue, sender: sender)
         }
     }
+    
     // MARK: - UITableViewDataSource
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return photos.count
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ImagesListCell.reuseIdentifier, for: indexPath)
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
-        let currentDate = Date()
-        let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd MMMM yyyy"
-            formatter.locale = Locale(identifier: "ru_RU")
-            return formatter
-        }()
-        let dateString = dateFormatter.string(from: currentDate)
-        imageListCell.dateLabel.text = "\(dateString)"
         
         configCell(for: imageListCell, with: indexPath)
         configLikeButton(for: imageListCell, with: indexPath)
+        
         return imageListCell
     }
     
-    func tableView(_ tableView: UITableView,
-      willDisplay cell: UITableViewCell,
-      forRowAt indexPath: IndexPath
-    ) {
-        guard indexPath.row + 1 == imagesListService.photos.count else { return }
-        imagesListService.fetchPhotosNextPage()
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+    func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        
+        guard oldCount != newCount else { return }
+
+        photos = imagesListService.photos
+
+        tableView.performBatchUpdates {
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0)
+            }
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        } completion: { _ in }
     }
     
     // MARK: - UITableViewDelegate
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let photoName = photosName[indexPath.row]
-        
-        guard let photo = UIImage(named: photoName) else {
-            print("Изображение \(photoName) не найдено")
-            return 44
-        }
+        let photo = photos[indexPath.row]
         let imageWidth = photo.size.width
         let imageHeight = photo.size.height
         let tableViewWidth = tableView.frame.width
@@ -82,23 +89,68 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         let cellHeight = tableViewWidth * imageHeight / imageWidth
         return cellHeight
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard indexPath.row + 1 == photos.count else { return }
+        imagesListService.fetchPhotosNextPage()
+    }
+    
     // MARK: - Private Methods
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let photoName = photosName[indexPath.row]
-        guard let photo = UIImage(named: photoName) else {
-            print("Изображение \(photoName) не найдено")
-            return
-        }
-        cell.customImageView.image = photo
+    
+    @objc private func handlePhotosUpdated() {
+        updateTableViewAnimated()
     }
-    func configLikeButton(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let isLiked = indexPath.row % 2 != 0
-        let likeImage = isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
+    
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        let photo = photos[indexPath.row]
+        
+        cell.customImageView.kf.indicatorType = .activity
+        if let url = URL(string: photo.thumbImageURL) {
+            cell.customImageView.kf.setImage(
+                with: url,
+                placeholder: UIImage(named: "Placeholder"),
+                options: nil,
+                progressBlock: nil,
+                completionHandler: { [weak self] result in
+                    switch result {
+                    case .success:
+                        self?.tableView.performBatchUpdates({
+                            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+                        }, completion: nil)
+                    case .failure(let error):
+                        print("Error loading image: \(error)")
+                    }
+                }
+            )
+        }
+        
+        let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd MMMM yyyy"
+            formatter.locale = Locale(identifier: "ru_RU")
+            return formatter
+        }()
+        let inputDateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            return formatter
+        }()
+
+        if let createdAtString = photo.createdAt,
+           let createdAt = inputDateFormatter.date(from: createdAtString) {
+            cell.dateLabel.text = dateFormatter.string(from: createdAt)
+        } else {
+            cell.dateLabel.text = ""
+        }
+    }
+    
+    private func configLikeButton(for cell: ImagesListCell, with indexPath: IndexPath) {
+        let photo = photos[indexPath.row]
+        let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
         cell.likeButton.setImage(likeImage, for: .normal)
-        }
     }
-
-
+}

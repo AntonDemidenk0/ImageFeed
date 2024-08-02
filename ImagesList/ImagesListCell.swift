@@ -3,7 +3,6 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     @IBOutlet weak var dateLabel: UILabel!
-
     @IBOutlet weak var customImageView: UIImageView!
     @IBOutlet weak var likeButton: UIButton!
     @IBAction func likeButtonTapped(_ sender: Any) {
@@ -11,4 +10,9 @@ final class ImagesListCell: UITableViewCell {
         let likeImage = isLiked ? UIImage(named: "likeButtonOff.jpeg") : UIImage(named: "likeButtonOn.jpeg")
         likeButton.setImage(likeImage, for: .normal)
     }
+    override func prepareForReuse() {
+            super.prepareForReuse()
+            customImageView.kf.cancelDownloadTask()
+            customImageView.image = nil
+        }
 }
