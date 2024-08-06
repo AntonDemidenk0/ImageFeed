@@ -97,7 +97,7 @@
                                                         <imageReference key="image" image="likeButtonOff" symbolScale="default" renderingMode="template" variableValue="0.40000000000000008"/>
                                                     </state>
                                                     <connections>
-                                                        <action selector="likeButtonTapped:" destination="tdv-za-RCg" eventType="touchUpInside" id="TdU-jj-yNU"/>
+                                                        <action selector="likeButtonClicked" destination="tdv-za-RCg" eventType="touchUpInside" id="edP-SV-Bbn"/>
                                                     </connections>
                                                 </button>
                                             </subviews>

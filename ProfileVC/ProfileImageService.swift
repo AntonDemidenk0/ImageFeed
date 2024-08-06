@@ -57,4 +57,7 @@ final class ProfileImageService {
             }
         }.resume()
     }
+    func resetImageURL() {
+        self.avatarURL = nil
+    }
 }

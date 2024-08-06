@@ -1,5 +1,6 @@
 import UIKit
 import SwiftKeychainWrapper
+import ProgressHUD
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -8,6 +9,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        ProgressHUD.animationType = .activityIndicator
+        ProgressHUD.colorHUD = .black
+        ProgressHUD.colorAnimation = .lightGray
         return true
     }
 
@@ -25,6 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         sceneConfiguration.delegateClass = SceneDelegate.self
         return sceneConfiguration
     }
+    
+    
 
 
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {

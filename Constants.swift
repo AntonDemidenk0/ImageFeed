@@ -106,4 +106,25 @@ enum Constants {
         request.httpMethod = "GET"
         return request
     }
+    static func makeLikeRequest(photoId: String, isLike: Bool) -> URLRequest? {
+           guard let baseURL = defaultBaseURL else {
+               print("Invalid base URL")
+               return nil
+           }
+           let urlString = "/photos/\(photoId)/like"
+           guard let url = URL(string: urlString, relativeTo: baseURL) else {
+               print("Invalid URL string")
+               return nil
+           }
+           
+           var request = URLRequest(url: url)
+           request.httpMethod = isLike ? "POST" : "DELETE"
+           if let token = Constants.tokenStorage.token {
+               request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+           } else {
+               print("Token not found")
+               return nil
+           }
+           return request
+       }
 }

@@ -28,20 +28,20 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showSingleImageSegueIdentifier {
-            guard
-                let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
-            else {
-                assertionFailure("Invalid segue destination")
-                return
+            if segue.identifier == showSingleImageSegueIdentifier {
+                guard
+                    let viewController = segue.destination as? SingleImageViewController,
+                    let indexPath = sender as? IndexPath
+                else {
+                    assertionFailure("Invalid segue destination")
+                    return
+                }
+                let photo = photos[indexPath.row]
+                let imageURL = URL(string: photo.largeImageURL)
+                viewController.imageURL = imageURL
+            } else {
+                super.prepare(for: segue, sender: sender)
             }
-            let photo = photos[indexPath.row]
-            let imageURL = URL(string: photo.largeImageURL)
-            //viewController.imageURL = imageURL
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
     }
     
     // MARK: - UITableViewDataSource
@@ -55,6 +55,8 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        
+        imageListCell.delegate = self // Устанавливаем делегат
         
         configCell(for: imageListCell, with: indexPath)
         configLikeButton(for: imageListCell, with: indexPath)
@@ -150,7 +152,35 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     
     private func configLikeButton(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
-        let likeImage = photo.isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
-        cell.likeButton.setImage(likeImage, for: .normal)
+        cell.setIsLiked(photo.isLiked)
+    }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        // Покажем лоадер
+        UIBlockingProgressHUD.show()
+        
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { result in
+            switch result {
+            case .success:
+                // Синхронизируем массив картинок с сервисом
+                self.photos = self.imagesListService.photos
+                // Изменим индикацию лайка картинки
+                cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                // Уберём лоадер
+                UIBlockingProgressHUD.dismiss()
+            case .failure:
+                // Уберём лоадер
+                UIBlockingProgressHUD.dismiss()
+                // Показать ошибку с использованием UIAlertController
+                let alert = UIAlertController(title: "Ошибка", message: "Не удалось выполнить операцию", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(alert, animated: true)
+            }
+        }
     }
 }

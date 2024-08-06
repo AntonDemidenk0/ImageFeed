@@ -41,4 +41,7 @@ final class ProfileService {
             }
         }.resume()
     }
+    func resetProfile() {
+        self.profile = nil
+    }
 }
