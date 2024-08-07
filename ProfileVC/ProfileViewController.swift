@@ -1,12 +1,30 @@
 import UIKit
+import WebKit
+import SwiftKeychainWrapper
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
+    
+    // MARK: - Properties
+    
+    private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    
+    var profile: ProfileResult? {
+        didSet {
+            if isViewLoaded {
+                updateProfileDetails()
+                updateAvatar()
+            }
+        }
+    }
     
     private let profileImage: UIImageView = {
         let image = UIImage(named: "UserPic")
         let imageView = UIImageView(image: image)
         return imageView
     }()
+    
     private let userName: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 23)
@@ -15,6 +33,7 @@ final class ProfileViewController: UIViewController {
         label.text = "Екатерина Новикова"
         return label
     }()
+    
     private let loginName: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
@@ -23,6 +42,7 @@ final class ProfileViewController: UIViewController {
         label.text = "@ekaterina_nov"
         return label
     }()
+    
     private let profileInfo: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
@@ -32,6 +52,7 @@ final class ProfileViewController: UIViewController {
         label.text = "Hello, world!"
         return label
     }()
+    
     private let exitButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "ExitButton"), for: .normal)
@@ -42,7 +63,22 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        exitButton.addTarget(self, action: #selector(self.didTapExit), for: .touchUpInside)
+        setupView()
+        setupObserver()
+        updateAvatar()
+        updateProfileDetails()
+    }
+    
+    deinit {
+        if let observer = profileImageServiceObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func setupView() {
+        exitButton.addTarget(self, action: #selector(didTapExit), for: .touchUpInside)
         [profileImage, userName, loginName, profileInfo, exitButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
@@ -50,18 +86,27 @@ final class ProfileViewController: UIViewController {
         setUpConstraints(for: profileImage, userName: userName, loginName: loginName, profileInfo: profileInfo, exitButton: exitButton)
     }
     
-    // MARK: - Actions
-    @objc private func didTapExit() {
-        // Обработка нажатия кнопки выхода
+    private func setupObserver() {
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(forName: ProfileImageService.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
     }
     
+    // MARK: - Actions
+    
+    @objc private func didTapExit() {
+        logout()
+     }
+    
     // MARK: - Private Methods
-    private func setUpConstraints(for profileImage: UIImageView, 
+    
+    private func setUpConstraints(for profileImage: UIImageView,
                                   userName: UILabel,
                                   loginName: UILabel,
                                   profileInfo: UILabel,
-                                  exitButton: UIButton
-    ) {
+                                  exitButton: UIButton) {
         let safeArea = view.safeAreaLayoutGuide
         
         NSLayoutConstraint.activate([
@@ -84,5 +129,53 @@ final class ProfileViewController: UIViewController {
             exitButton.heightAnchor.constraint(equalToConstant: 24),
             exitButton.widthAnchor.constraint(equalToConstant: 24)
         ])
+    }
+    
+    private func updateProfileDetails() {
+           guard let profile = profile else { return }
+           print("Updating profile details with: \(profile)")
+           loginName.text = profile.username
+           let firstName = profile.first_name ?? ""
+           let lastName = profile.last_name ?? ""
+           userName.text = "\(firstName) \(lastName)"
+           profileInfo.text = profile.bio ?? ""
+       }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else {
+            profileImage.image = UIImage(named: "NoAvatarUser")
+            profileImage.layer.cornerRadius = 35
+            profileImage.layer.masksToBounds = true
+            return
+        }
+        profileImage.kf.setImage(with: url)
+        profileImage.layer.cornerRadius = 35
+        profileImage.layer.masksToBounds = true
+    }
+    
+    private func logout() {
+        guard let token = Constants.tokenStorage.token else { return }
+        clearAppData()
+        let navigationController = UINavigationController(rootViewController: SplashViewController())
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
+    }
+    private func clearAppData() {
+        if let appDomain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+        }
+        
+
+        KeychainWrapper.standard.removeAllKeys()
+
+        let dataStore = WKWebsiteDataStore.default()
+        dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+            for record in records {
+                dataStore.removeData(ofTypes: record.dataTypes, for: [record]) {}
+            }
+        }
     }
 }
