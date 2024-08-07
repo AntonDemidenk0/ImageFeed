@@ -31,9 +31,10 @@ final class WebViewViewController: UIViewController {
         loadUIProgressView()
         webView.navigationDelegate = self
         view.addSubview(webView)
+        view.addSubview(progressView)
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
-            options: [],
+             options: [.new, .initial],
             changeHandler: { [weak self] _, _ in
                 guard let self = self else { return }
                 self.updateProgress()
