@@ -4,21 +4,21 @@ import UIKit
 final class SingleImageViewController: UIViewController {
     
     var imageURL: URL? {
-           didSet {
-               guard isViewLoaded, let imageURL else { return }
-               loadImage(from: imageURL)
-           }
-       }
+        didSet {
+            guard isViewLoaded, let imageURL else { return }
+            loadImage(from: imageURL)
+        }
+    }
     
     @IBOutlet weak var shareButton: UIButton!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBAction func didTapShareButton(_ sender: Any) {
         guard let image = imageView.image else { return }
-                let share = UIActivityViewController(
-                    activityItems: [image],
-                    applicationActivities: nil
-                )
-                present(share, animated: true, completion: nil)
+        let share = UIActivityViewController(
+            activityItems: [image],
+            applicationActivities: nil
+        )
+        present(share, animated: true, completion: nil)
     }
     @IBAction func didTapBackward(_ sender: Any) {
         dismiss(animated: true, completion: nil)
@@ -56,15 +56,15 @@ final class SingleImageViewController: UIViewController {
         )
     }
     private func showError() {
-            let alert = UIAlertController(title: nil, message: "Что-то пошло не так. Попробовать ещё раз?", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Не надо", style: .cancel, handler: nil))
-            alert.addAction(UIAlertAction(title: "Повторить", style: .default, handler: { [weak self] _ in
-                if let url = self?.imageURL {
-                    self?.loadImage(from: url)
-                }
-            }))
-            present(alert, animated: true, completion: nil)
-        }
+        let alert = UIAlertController(title: nil, message: "Что-то пошло не так. Попробовать ещё раз?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Не надо", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default, handler: { [weak self] _ in
+            if let url = self?.imageURL {
+                self?.loadImage(from: url)
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale

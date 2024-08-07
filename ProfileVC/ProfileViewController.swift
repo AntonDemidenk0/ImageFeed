@@ -98,7 +98,7 @@ final class ProfileViewController: UIViewController {
     
     @objc private func didTapExit() {
         showLogoutAlert()
-     }
+    }
     private func showLogoutAlert() {
         let alert = UIAlertController(
             title: "Пока, пока!",
@@ -149,14 +149,14 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateProfileDetails() {
-           guard let profile = profile else { return }
-           print("Updating profile details with: \(profile)")
-           loginName.text = profile.username
-           let firstName = profile.first_name ?? ""
-           let lastName = profile.last_name ?? ""
-           userName.text = "\(firstName) \(lastName)"
-           profileInfo.text = profile.bio ?? ""
-       }
+        guard let profile = profile else { return }
+        print("Updating profile details with: \(profile)")
+        loginName.text = profile.username
+        let firstName = profile.first_name ?? ""
+        let lastName = profile.last_name ?? ""
+        userName.text = "\(firstName) \(lastName)"
+        profileInfo.text = profile.bio ?? ""
+    }
     
     private func updateAvatar() {
         guard

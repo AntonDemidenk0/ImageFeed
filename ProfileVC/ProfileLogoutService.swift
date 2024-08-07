@@ -48,6 +48,4 @@ final class ProfileLogoutService {
         window.makeKeyAndVisible()
     }
 }
-//let navigationController = UINavigationController(rootViewController: SplashViewController())
-//navigationController.modalPresentationStyle = .fullScreen
-//present(navigationController, animated: true, completion: nil)
+

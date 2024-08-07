@@ -28,20 +28,20 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-            if segue.identifier == showSingleImageSegueIdentifier {
-                guard
-                    let viewController = segue.destination as? SingleImageViewController,
-                    let indexPath = sender as? IndexPath
-                else {
-                    assertionFailure("Invalid segue destination")
-                    return
-                }
-                let photo = photos[indexPath.row]
-                let imageURL = URL(string: photo.largeImageURL)
-                viewController.imageURL = imageURL
-            } else {
-                super.prepare(for: segue, sender: sender)
+        if segue.identifier == showSingleImageSegueIdentifier {
+            guard
+                let viewController = segue.destination as? SingleImageViewController,
+                let indexPath = sender as? IndexPath
+            else {
+                assertionFailure("Invalid segue destination")
+                return
             }
+            let photo = photos[indexPath.row]
+            let imageURL = URL(string: photo.largeImageURL)
+            viewController.imageURL = imageURL
+        } else {
+            super.prepare(for: segue, sender: sender)
+        }
     }
     
     // MARK: - UITableViewDataSource
@@ -56,7 +56,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             return UITableViewCell()
         }
         
-        imageListCell.delegate = self // Устанавливаем делегат
+        imageListCell.delegate = self 
         
         configCell(for: imageListCell, with: indexPath)
         configLikeButton(for: imageListCell, with: indexPath)
@@ -69,9 +69,9 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
         let newCount = imagesListService.photos.count
         
         guard oldCount != newCount else { return }
-
+        
         photos = imagesListService.photos
-
+        
         tableView.performBatchUpdates {
             let indexPaths = (oldCount..<newCount).map { i in
                 IndexPath(row: i, section: 0)
@@ -141,7 +141,7 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
             return formatter
         }()
-
+        
         if let createdAtString = photo.createdAt,
            let createdAt = inputDateFormatter.date(from: createdAtString) {
             cell.dateLabel.text = dateFormatter.string(from: createdAt)
@@ -161,22 +161,16 @@ extension ImagesListViewController: ImagesListCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         let photo = photos[indexPath.row]
         
-        // Покажем лоадер
         UIBlockingProgressHUD.show()
         
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { result in
             switch result {
             case .success:
-                // Синхронизируем массив картинок с сервисом
                 self.photos = self.imagesListService.photos
-                // Изменим индикацию лайка картинки
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                // Уберём лоадер
                 UIBlockingProgressHUD.dismiss()
             case .failure:
-                // Уберём лоадер
                 UIBlockingProgressHUD.dismiss()
-                // Показать ошибку с использованием UIAlertController
                 let alert = UIAlertController(title: "Ошибка", message: "Не удалось выполнить операцию", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default))
                 self.present(alert, animated: true)

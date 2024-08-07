@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct ImageResult: Codable {
+struct PhotoResult: Codable {
     let id: String
     let width: CGFloat
     let height: CGFloat
     let created_at: String?
     let description: String?
     let liked_by_user: Bool
-    let urls: ImageUrls
+    let urls: UrlsResult
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -26,7 +26,7 @@ struct ImageResult: Codable {
         case urls
     }
 }
-struct  ImageUrls: Codable {
+struct  UrlsResult: Codable {
     let full: String
     let thumb: String
 }

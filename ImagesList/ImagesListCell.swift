@@ -18,8 +18,8 @@ final class ImagesListCell: UITableViewCell {
         likeButton.setImage(likeImage, for: .normal)
     }
     @IBAction private func likeButtonClicked() {
-           delegate?.imageListCellDidTapLike(self)
-       }
+        delegate?.imageListCellDidTapLike(self)
+    }
     
     func setIsLiked(_ isLiked: Bool) {
         let likeImage = isLiked ? UIImage(named: "likeButtonOn.jpeg") : UIImage(named: "likeButtonOff.jpeg")
@@ -27,8 +27,8 @@ final class ImagesListCell: UITableViewCell {
     }
     
     override func prepareForReuse() {
-            super.prepareForReuse()
-            customImageView.kf.cancelDownloadTask()
-            customImageView.image = nil
-        }
+        super.prepareForReuse()
+        customImageView.kf.cancelDownloadTask()
+        customImageView.image = nil
+    }
 }
