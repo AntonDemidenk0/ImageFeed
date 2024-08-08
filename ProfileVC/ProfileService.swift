@@ -3,27 +3,22 @@ import Foundation
 final class ProfileService {
     
     // MARK: - Enums
-    
     enum ProfileServiceError: Error {
         case invalidRequest
     }
     
     // MARK: - Static Properties
-    
     static let shared = ProfileService()
     
     // MARK: - Properties
-    
     var profile: ProfileResult?
     
     // MARK: - Initializers
-    
     private init() {}
     
-    // MARK: - Methods
-    
+    // MARK: - Public Methods
     func fetchProfile(completion: @escaping (Result<ProfileResult, Error>) -> Void) {
-        guard let request = Constants.makeProfileInfoRequest() else {
+        guard let request = NetworkService.shared.makeProfileInfoRequest() else {
             completion(.failure(ProfileServiceError.invalidRequest))
             return
         }
@@ -41,6 +36,7 @@ final class ProfileService {
             }
         }.resume()
     }
+    
     func resetProfile() {
         self.profile = nil
     }

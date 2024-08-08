@@ -9,6 +9,18 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
     private let imagesListService = ImagesListService.shared
     var photos: [Photo] = []
     
+    private let isoDateFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        return formatter
+    }()
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMMM yyyy"
+        formatter.locale = .current
+        return formatter
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -130,20 +142,9 @@ final class ImagesListViewController: UIViewController, UITableViewDelegate, UIT
             )
         }
         
-        let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "dd MMMM yyyy"
-            formatter.locale = Locale(identifier: "ru_RU")
-            return formatter
-        }()
-        let inputDateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-            return formatter
-        }()
-        
         if let createdAtString = photo.createdAt,
-           let createdAt = inputDateFormatter.date(from: createdAtString) {
+           let createdAt = isoDateFormatter.date(from: createdAtString) {
+            dateFormatter.locale = .current
             cell.dateLabel.text = dateFormatter.string(from: createdAt)
         } else {
             cell.dateLabel.text = ""
