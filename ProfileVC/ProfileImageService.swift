@@ -3,26 +3,21 @@ import Foundation
 final class ProfileImageService {
     
     // MARK: - Enums
-    
     enum ProfileImageError: Error {
         case invalidRequest
     }
     
     // MARK: - Static Properties
-    
     static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     static let shared = ProfileImageService()
     
     // MARK: - Properties
-    
     private (set) var avatarURL: String?
     
     // MARK: - Initializers
-    
     private init() {}
     
-    // MARK: - Methods
-    
+    // MARK: - Public Methods
     func fetchProfileImageURL(_ completion: @escaping (Result<String, Error>) -> Void) {
         guard let username = ProfileService.shared.profile?.username else {
             print("[ProfileImageService.fetchProfileImageURL]: Error - Username is nil")
@@ -30,7 +25,7 @@ final class ProfileImageService {
             return
         }
         
-        guard let request = Constants.makeProfilePicRequest(username: username) else {
+        guard let request = NetworkService.shared.makeProfilePicRequest(username: username) else {
             print("[ProfileImageService.fetchProfileImageURL]: Error - Invalid request")
             completion(.failure(ProfileImageError.invalidRequest))
             return
@@ -56,5 +51,9 @@ final class ProfileImageService {
                 }
             }
         }.resume()
+    }
+    
+    func resetImageURL() {
+        self.avatarURL = nil
     }
 }

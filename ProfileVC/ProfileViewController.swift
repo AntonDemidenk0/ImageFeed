@@ -97,9 +97,26 @@ final class ProfileViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func didTapExit() {
-        logout()
-     }
-    
+        showLogoutAlert()
+    }
+    private func showLogoutAlert() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        let yesAction = UIAlertAction(title: "Да", style: .default) { _ in
+            ProfileLogoutService.shared.logout()
+        }
+        
+        let noAction = UIAlertAction(title: "Нет", style: .default, handler: nil)
+        
+        alert.addAction(yesAction)
+        alert.addAction(noAction)
+        
+        present(alert, animated: true, completion: nil)
+    }
     // MARK: - Private Methods
     
     private func setUpConstraints(for profileImage: UIImageView,
@@ -132,14 +149,14 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateProfileDetails() {
-           guard let profile = profile else { return }
-           print("Updating profile details with: \(profile)")
-           loginName.text = profile.username
-           let firstName = profile.first_name ?? ""
-           let lastName = profile.last_name ?? ""
-           userName.text = "\(firstName) \(lastName)"
-           profileInfo.text = profile.bio ?? ""
-       }
+        guard let profile = profile else { return }
+        print("Updating profile details with: \(profile)")
+        loginName.text = profile.username
+        let firstName = profile.first_name ?? ""
+        let lastName = profile.last_name ?? ""
+        userName.text = "\(firstName) \(lastName)"
+        profileInfo.text = profile.bio ?? ""
+    }
     
     private func updateAvatar() {
         guard
@@ -154,28 +171,5 @@ final class ProfileViewController: UIViewController {
         profileImage.kf.setImage(with: url)
         profileImage.layer.cornerRadius = 35
         profileImage.layer.masksToBounds = true
-    }
-    
-    private func logout() {
-        guard let token = Constants.tokenStorage.token else { return }
-        clearAppData()
-        let navigationController = UINavigationController(rootViewController: SplashViewController())
-        navigationController.modalPresentationStyle = .fullScreen
-        present(navigationController, animated: true, completion: nil)
-    }
-    private func clearAppData() {
-        if let appDomain = Bundle.main.bundleIdentifier {
-            UserDefaults.standard.removePersistentDomain(forName: appDomain)
-        }
-        
-
-        KeychainWrapper.standard.removeAllKeys()
-
-        let dataStore = WKWebsiteDataStore.default()
-        dataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
-            for record in records {
-                dataStore.removeData(ofTypes: record.dataTypes, for: [record]) {}
-            }
-        }
     }
 }
