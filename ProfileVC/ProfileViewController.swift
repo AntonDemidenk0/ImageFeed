@@ -1,13 +1,30 @@
+//
+//  ProfileViewController.swift
+//  ImageFeed
+//
+//  Created by Anton Demidenko on 17.8.24..
+//
+
 import UIKit
 import WebKit
 import SwiftKeychainWrapper
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+// MARK: - ProfileViewControllerProtocol
+
+public protocol ProfileViewControllerProtocol: AnyObject {
+    func updateProfileDetails()
+    func updateAvatar()
+}
+
+// MARK: - ProfileViewController
+
+final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
     
     // MARK: - Properties
     
     private let profileService = ProfileService.shared
+    var presenter: ProfilePresenterProtocol?
     private var profileImageServiceObserver: NSObjectProtocol?
     
     var profile: ProfileResult? {
@@ -19,13 +36,13 @@ final class ProfileViewController: UIViewController {
         }
     }
     
-    private let profileImage: UIImageView = {
+    let profileImage: UIImageView = {
         let image = UIImage(named: "UserPic")
         let imageView = UIImageView(image: image)
         return imageView
     }()
     
-    private let userName: UILabel = {
+    let userName: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = .white
@@ -34,7 +51,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let loginName: UILabel = {
+    let loginName: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .gray
@@ -43,7 +60,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let profileInfo: UILabel = {
+    let profileInfo: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 13)
         label.textColor = .white
@@ -53,7 +70,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let exitButton: UIButton = {
+    let exitButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "ExitButton"), for: .normal)
         return button
@@ -99,6 +116,7 @@ final class ProfileViewController: UIViewController {
     @objc private func didTapExit() {
         showLogoutAlert()
     }
+    
     private func showLogoutAlert() {
         let alert = UIAlertController(
             title: "Пока, пока!",
@@ -117,6 +135,7 @@ final class ProfileViewController: UIViewController {
         
         present(alert, animated: true, completion: nil)
     }
+    
     // MARK: - Private Methods
     
     private func setUpConstraints(for profileImage: UIImageView,
@@ -148,7 +167,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateProfileDetails() {
+    func updateProfileDetails() {
         guard let profile = profile else { return }
         print("Updating profile details with: \(profile)")
         loginName.text = profile.username
@@ -158,7 +177,7 @@ final class ProfileViewController: UIViewController {
         profileInfo.text = profile.bio ?? ""
     }
     
-    private func updateAvatar() {
+    func updateAvatar() {
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
@@ -171,5 +190,12 @@ final class ProfileViewController: UIViewController {
         profileImage.kf.setImage(with: url)
         profileImage.layer.cornerRadius = 35
         profileImage.layer.masksToBounds = true
+    }
+    
+    // MARK: - Configure Method
+    
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        self.presenter?.view = self
     }
 }

@@ -1,5 +1,11 @@
 import Foundation
 
+protocol ProfileServiceProtocol {
+    var profile: ProfileResult? { get }
+    func fetchProfile(completion: @escaping (Result<ProfileResult, Error>) -> Void)
+    func resetProfile()
+}
+
 final class ProfileService {
     
     // MARK: - Enums
