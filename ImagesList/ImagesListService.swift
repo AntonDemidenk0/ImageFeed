@@ -28,8 +28,14 @@ extension Array {
     }
 }
 
+protocol ImagesListServiceProtocol {
+    var photos: [Photo] { get }
+    func fetchPhotosNextPage()
+    func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void)
+}
+
 // MARK: - ImagesListService Class
-final class ImagesListService {
+final class ImagesListService: ImagesListServiceProtocol {
     
     // MARK: - Static Properties
     static let shared = ImagesListService()

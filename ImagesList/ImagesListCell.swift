@@ -4,7 +4,13 @@ protocol ImagesListCellDelegate: AnyObject {
     func imageListCellDidTapLike(_ cell: ImagesListCell)
 }
 
-final class ImagesListCell: UITableViewCell {
+protocol ImagesListCellProtocol {
+    var customImageView: UIImageView! { get }
+    var dateLabel: UILabel! { get }
+    func setIsLiked(_ isLiked: Bool)
+}
+
+final class ImagesListCell: UITableViewCell, ImagesListCellProtocol {
     
     weak var delegate: ImagesListCellDelegate?
     

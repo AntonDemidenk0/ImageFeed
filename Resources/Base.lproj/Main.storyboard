@@ -86,6 +86,7 @@
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ui-sI-0BI">
                                                     <rect key="frame" x="329" y="4" width="44" height="44"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="likeButton" label="likeButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="44" id="eku-mO-Vpk"/>
                                                         <constraint firstAttribute="height" constant="44" id="r4s-Dd-Kja"/>
@@ -151,7 +152,7 @@
         <!--Single Image View Controller-->
         <scene sceneID="O6m-5e-BMC">
             <objects>
-                <viewController modalPresentationStyle="fullScreen" id="EAJ-Ft-Xfd" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SingleImageViewController" modalPresentationStyle="fullScreen" id="EAJ-Ft-Xfd" customClass="SingleImageViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="7pg-G4-gtu">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -172,6 +173,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="juf-le-OUg">
                                 <rect key="frame" x="9" y="9" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="backButton"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="9mo-Cx-4z8"/>
                                     <constraint firstAttribute="height" constant="48" id="nIz-LA-4bb"/>
@@ -253,7 +255,7 @@
         <!--Web View View Controller-->
         <scene sceneID="yZc-uV-M8M">
             <objects>
-                <viewController id="9X3-6p-v9x" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="9X3-6p-v9x" customClass="WebViewViewController" customModule="ImageFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="9dw-AC-eH7">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
