@@ -86,6 +86,7 @@
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Ui-sI-0BI">
                                                     <rect key="frame" x="329" y="4" width="44" height="44"/>
+                                                    <accessibility key="accessibilityConfiguration" identifier="likeButton" label="likeButton"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="44" id="eku-mO-Vpk"/>
                                                         <constraint firstAttribute="height" constant="44" id="r4s-Dd-Kja"/>
@@ -172,6 +173,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="juf-le-OUg">
                                 <rect key="frame" x="9" y="9" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="backButton"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="48" id="9mo-Cx-4z8"/>
                                     <constraint firstAttribute="height" constant="48" id="nIz-LA-4bb"/>

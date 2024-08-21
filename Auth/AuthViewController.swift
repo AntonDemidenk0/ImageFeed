@@ -30,6 +30,7 @@ final class AuthViewController: UIViewController {
         button.clipsToBounds = true
         button.backgroundColor = .white
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "Authenticate"
         return button
     }()
     

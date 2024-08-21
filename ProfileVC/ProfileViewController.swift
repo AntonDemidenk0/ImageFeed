@@ -48,6 +48,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         label.textColor = .white
         label.textAlignment = .left
         label.text = "Екатерина Новикова"
+        label.accessibilityIdentifier = "Name Lastname"
         return label
     }()
     
@@ -57,6 +58,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         label.textColor = .gray
         label.textAlignment = .left
         label.text = "@ekaterina_nov"
+        label.accessibilityIdentifier = "@username"
         return label
     }()
     
@@ -73,6 +75,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
     let exitButton: UIButton = {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(named: "ExitButton"), for: .normal)
+        button.accessibilityIdentifier = "logout button"
         return button
     }()
     
@@ -123,11 +126,11 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
             message: "Уверены, что хотите выйти?",
             preferredStyle: .alert
         )
-        
+    
         let yesAction = UIAlertAction(title: "Да", style: .default) { _ in
             ProfileLogoutService.shared.logout()
         }
-        
+        yesAction.accessibilityIdentifier = "Yes"
         let noAction = UIAlertAction(title: "Нет", style: .default, handler: nil)
         
         alert.addAction(yesAction)

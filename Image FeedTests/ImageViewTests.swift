@@ -96,7 +96,7 @@ final class ImagesListViewControllerTests: XCTestCase {
             XCTAssertEqual(insertedIndexPath?.row, 1, "Expected row index to be 1")
         }
     }
-
+    
     func testConfigureCell() {
         // given
         let cell = TestImagesListCell()
@@ -121,10 +121,10 @@ final class ImagesListViewControllerTests: XCTestCase {
         
         let indexPath = IndexPath(row: 0, section: 0)
         viewController.prepare(for: segue, sender: indexPath)
-
+        
         XCTAssertEqual(singleImageViewController.imageURL, URL(string: photo.largeImageURL))
     }
-
+    
     func testTableViewHeightForRowAt() {
         // given
         let indexPath = IndexPath(row: 0, section: 0)
@@ -188,7 +188,7 @@ final class ImagesListPresenterMock: ImagesListPresenterProtocol {
     var performSegueCalled = false
     var updateTableViewAnimatedCalled = false
     var service: ImagesListServiceProtocol?
-
+    
     func numberOfRows() -> Int {
         return 1
     }
