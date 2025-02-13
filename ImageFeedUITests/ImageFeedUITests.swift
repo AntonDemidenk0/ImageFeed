@@ -28,14 +28,14 @@ class Image_FeedUITests: XCTestCase {
         
         loginTextField.tap()
         loginTextField.typeText("example@example.ru")
-        webView.tap()
+        app.buttons["Done"].tap()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         
         passwordTextField.tap()
         passwordTextField.typeText("example")
-        webView.tap()
+        app.buttons["Done"].tap()
         
         webView.buttons["Login"].tap()
         
@@ -51,11 +51,11 @@ class Image_FeedUITests: XCTestCase {
         let cell = tablesQuery.descendants(matching: .cell).element(boundBy: 0)
         cell.swipeUp()
         
-        sleep(2)
+        sleep(4)
         let cell2 = tablesQuery.descendants(matching: .cell).element(boundBy: 2)
         cell2.swipeDown()
         
-        sleep(2)
+        sleep(4)
         
         let cellToLike = tablesQuery.descendants(matching: .cell).element(boundBy: 1)
         
@@ -71,7 +71,7 @@ class Image_FeedUITests: XCTestCase {
         
         let image = app.scrollViews.images.element(boundBy: 0)
         
-        image.pinch(withScale: 3, velocity: 1) // zoom in
+        image.pinch(withScale: 3, velocity: 1)
         
         image.pinch(withScale: 0.5, velocity: -1)
         

@@ -77,51 +77,39 @@ final class ProfileTests: XCTestCase {
     }
     
     func testFetchProfileUpdatesView() {
-        // Given
         let profile = ProfileResult(username: "testuser", first_name: "First", last_name: "Last", bio: "Bio")
         profileServiceMock.profile = profile
         
-        // When
         presenter.fetchProfile()
         
-        // Then
         XCTAssertTrue(profileServiceMock.fetchProfileCalled, "fetchProfile() should be called on profileServiceMock")
         XCTAssertTrue(viewControllerMock.updateProfileDetailsCalled, "updateProfileDetails() should be called on viewControllerMock")
     }
     
     func testFetchProfileImageUpdatesView() {
-        // Given
         let imageURL = "http://test.url"
         profileImageServiceMock.avatarURL = imageURL
         
-        // When
         presenter.fetchProfileImage()
         
-        // Then
         XCTAssertTrue(profileImageServiceMock.fetchProfileImageURLCalled, "fetchProfileImageURL() should be called on profileImageServiceMock")
         XCTAssertTrue(viewControllerMock.updateAvatarCalled, "updateAvatar() should be called on viewControllerMock")
     }
     
     func testFetchProfileHandlesFailure() {
-        // Given
         profileServiceMock.profile = nil
         
-        // When
         presenter.fetchProfile()
         
-        // Then
         XCTAssertTrue(profileServiceMock.fetchProfileCalled, "fetchProfile() should be called on profileServiceMock")
         XCTAssertFalse(viewControllerMock.updateProfileDetailsCalled, "updateProfileDetails() should not be called on viewControllerMock")
     }
     
     func testFetchProfileImageHandlesFailure() {
-        // Given
         profileImageServiceMock.avatarURL = nil
         
-        // When
         presenter.fetchProfileImage()
         
-        // Then
         XCTAssertTrue(profileImageServiceMock.fetchProfileImageURLCalled, "fetchProfileImageURL() should be called on profileImageServiceMock")
         XCTAssertFalse(viewControllerMock.updateAvatarCalled, "updateAvatar() should not be called on viewControllerMock")
     }
