@@ -30,6 +30,7 @@ final class AuthViewController: UIViewController {
         button.clipsToBounds = true
         button.backgroundColor = .white
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.accessibilityIdentifier = "Authenticate"
         return button
     }()
     
@@ -75,6 +76,10 @@ final class AuthViewController: UIViewController {
     // MARK: - Actions
     @objc private func didTapLogin() {
         let webViewVC = WebViewViewController()
+        let authHelper = AuthHelper()
+        let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+        webViewVC.presenter = webViewPresenter
+        webViewPresenter.view = webViewVC
         webViewVC.delegate = self
         navigationController?.pushViewController(webViewVC, animated: true)
     }

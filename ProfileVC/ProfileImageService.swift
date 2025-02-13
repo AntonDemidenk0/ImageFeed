@@ -1,5 +1,11 @@
 import Foundation
 
+protocol ProfileImageServiceProtocol {
+    var avatarURL: String? { get }
+    func fetchProfileImageURL(_ completion: @escaping (Result<String, Error>) -> Void)
+    func resetImageURL()
+}
+
 final class ProfileImageService {
     
     // MARK: - Enums
